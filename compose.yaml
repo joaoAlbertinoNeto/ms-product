@@ -1,0 +1,18 @@
+services:
+
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  myapi:
+    container_name: myapi_java
+    build: ./target
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
