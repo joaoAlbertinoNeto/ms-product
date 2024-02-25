@@ -64,7 +64,7 @@ public class ProductsServiceImpl implements ProductsService {
             productPortOut.delete(correlationId);
         }catch (ObjectNotFoundException runtimeException){
             log.error("[ERROR] - error {}", runtimeException.getLocalizedMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "OBJ_NOT_FOUND");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "OBJ_NOT_FOUND",null);
         }
     }
 
@@ -72,7 +72,7 @@ public class ProductsServiceImpl implements ProductsService {
     public ProductResponseDto getById(String correlationId) throws RuntimeException {
         log.info("[SERVICE] - geting {} ... ",correlationId);
         try{
-            return mapper.productToProductResponseDto(productPortOut.getById(correlationId).orElseThrow(() -> new RuntimeException()));
+            return mapper.productToProductResponseDto(productPortOut.getById(correlationId).orElseThrow(() -> new ObjectNotFoundException(new Object(),"")));
         }catch (ObjectNotFoundException runtimeException){
             log.error("[ERROR] - error {}", runtimeException.getLocalizedMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "OBJ_NOT_FOUND");

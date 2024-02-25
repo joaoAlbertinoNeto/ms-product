@@ -59,8 +59,11 @@ public class ProductRestController implements ProductPortIn {
     @GetMapping("/products/{correlationId}")
     @Override
     public ResponseEntity<ProductResponseDto> getById(@PathVariable  String correlationId) throws RuntimeException {
-        var response = Optional.of(productsService.getById(correlationId)).orElseThrow(() -> new RuntimeException("ERROR - CREATE PRODUCT"));
-        return ResponseEntity.ok(response);
+        try {
+            return ResponseEntity.ok(productsService.getById(correlationId));
+        }catch (ResponseStatusException e){
+            throw e;
+        }
     }
 
     @GetMapping("/products")
