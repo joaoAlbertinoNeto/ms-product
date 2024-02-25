@@ -6,13 +6,20 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: myapi
     ports:
       - "5432:5432"
-    restart: unless-stopped
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/db_script:/docker-entrypoint-initdb.d
 
   myapi:
     container_name: myapi_java
-    build: ./target
+    image: openjdk:17-jdk-slim
     ports:
       - "8080:8080"
-    restart: unless-stopped
+    volumes:
+      - ./target/myappi-0.0.1-SNAPSHOT.jar:/app/myappi-0.0.1-SNAPSHOT.jar
+    command: ["java", "-jar", "/app/myappi-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - postgres
