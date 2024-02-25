@@ -12,8 +12,8 @@ public interface ProductPortIn {
     public ResponseEntity<ProductResponseDto> create(ProductRequestDto productRequestDto) throws InternalServerError;
     public ProductResponseDto updateAll( ProductRequestDto productRequestDto,String correlationId) throws RuntimeException;
     public ProductResponseDto updatePartially( ProductRequestDto productRequestDto,String correlationId) throws RuntimeException;
-    public void delete(String correlationId) throws RuntimeException;
-    public ProductResponseDto getById( ProductRequestDto productRequestDto,String correlationId) throws RuntimeException;
+    public ResponseEntity<?> delete(String correlationId) throws RuntimeException;
+    public ResponseEntity<ProductResponseDto> getById(String correlationId) throws RuntimeException;
     public ResponseEntity<List<ProductResponseDto>> getAll() throws RuntimeException;
     public List<ProductResponseDto> getByName(String name) throws RuntimeException;
 }

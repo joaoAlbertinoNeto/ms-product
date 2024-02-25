@@ -1,14 +1,14 @@
 package com.net.myappi.infraestructure.in.rest;
 
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.net.myappi.application.port.in.ProductPortIn;
 import com.net.myappi.application.service.ProductsService;
 import com.net.myappi.domain.dto.rest.ProductRequestDto;
 import com.net.myappi.domain.dto.rest.ProductResponseDto;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,14 +43,24 @@ public class ProductRestController implements ProductPortIn {
         return null;
     }
 
+
+    @DeleteMapping("/products/{correlationId}")
     @Override
-    public void delete(String correlationId) throws RuntimeException {
+    public ResponseEntity<?> delete(@PathVariable String correlationId) throws RuntimeException {
+        try {
+            productsService.delete(correlationId);
+            return ResponseEntity.ok().build();
+        }catch (ResponseStatusException e){
+            throw e;
+        }
 
     }
 
+    @GetMapping("/products/{correlationId}")
     @Override
-    public ProductResponseDto getById(ProductRequestDto productRequestDto, String correlationId) throws RuntimeException {
-        return null;
+    public ResponseEntity<ProductResponseDto> getById(@PathVariable  String correlationId) throws RuntimeException {
+        var response = Optional.of(productsService.getById(correlationId)).orElseThrow(() -> new RuntimeException("ERROR - CREATE PRODUCT"));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/products")
