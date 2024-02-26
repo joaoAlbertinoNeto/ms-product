@@ -31,20 +31,12 @@ public class ProductsServiceImpl implements ProductsService {
 
     @Override
     public ProductResponseDto create(ProductRequestDto productRequestDto) throws RuntimeException {
-
-
         log.info("[SERVICE] - creating {} ... ",productRequestDto.getCorrelationId());
-        try{
-
-            var product = mapper.productRequestDtoToProduct(productRequestDto);
-            product.setCorrelationId(createCorrelation());
-            productPortOut.create(product);
-            log.info("[SERVICE] - created {} ... ",productRequestDto.getCorrelationId());
-            return mapper.productToProductResponseDto(product);
-        }catch (RuntimeException runtimeException){
-            log.error("[ERROR] - error {}", runtimeException.getLocalizedMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"ERROR_CREATE");
-        }
+        var product = mapper.productRequestDtoToProduct(productRequestDto);
+        product.setCorrelationId(createCorrelation());
+        productPortOut.create(product);
+        log.info("[SERVICE] - created {} ... ",productRequestDto.getCorrelationId());
+        return mapper.productToProductResponseDto(product);
     }
 
     @Override
@@ -60,23 +52,14 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     public void delete(String correlationId) throws RuntimeException {
         log.info("[SERVICE] - deleting {} ... ",correlationId);
-        try{
-            productPortOut.delete(correlationId);
-        }catch (ObjectNotFoundException runtimeException){
-            log.error("[ERROR] - error {}", runtimeException.getLocalizedMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "OBJ_NOT_FOUND",null);
-        }
+        productPortOut.delete(correlationId);
     }
 
     @Override
     public ProductResponseDto getById(String correlationId) throws RuntimeException {
         log.info("[SERVICE] - geting {} ... ",correlationId);
-        try{
-            return mapper.productToProductResponseDto(productPortOut.getById(correlationId).orElseThrow(() -> new ObjectNotFoundException(new Object(),"")));
-        }catch (ObjectNotFoundException runtimeException){
-            log.error("[ERROR] - error {}", runtimeException.getLocalizedMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "OBJ_NOT_FOUND");
-        }
+        return mapper.productToProductResponseDto(productPortOut.getById(correlationId));
+
     }
 
     @Override

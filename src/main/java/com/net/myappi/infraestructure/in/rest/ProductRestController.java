@@ -26,7 +26,7 @@ public class ProductRestController implements ProductPortIn {
 
     @PostMapping("/product")
     @Override
-    public ResponseEntity<ProductResponseDto> create(@RequestBody ProductRequestDto productRequestDto) throws RuntimeException {
+    public ResponseEntity<ProductResponseDto> create(@RequestBody ProductRequestDto productRequestDto)  {
         var response = Optional.of(productsService.create(productRequestDto)).orElseThrow(() -> new RuntimeException("ERROR - CREATE PRODUCT"));
         return ResponseEntity.ok(response);
     }
@@ -46,25 +46,18 @@ public class ProductRestController implements ProductPortIn {
 
     @DeleteMapping("/products/{correlationId}")
     @Override
-    public ResponseEntity<?> delete(@PathVariable String correlationId) throws RuntimeException {
-        try {
-            productsService.delete(correlationId);
-            return ResponseEntity.ok().build();
-        }catch (ResponseStatusException e){
-            throw e;
-        }
-
+    public ResponseEntity<?> delete(@PathVariable String correlationId){
+        productsService.delete(correlationId);
+        return ResponseEntity.ok().build();
     }
+
 
     @GetMapping("/products/{correlationId}")
     @Override
     public ResponseEntity<ProductResponseDto> getById(@PathVariable  String correlationId) throws RuntimeException {
-        try {
-            return ResponseEntity.ok(productsService.getById(correlationId));
-        }catch (ResponseStatusException e){
-            throw e;
-        }
+        return ResponseEntity.ok(productsService.getById(correlationId));
     }
+
 
     @GetMapping("/products")
     @Override

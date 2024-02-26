@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,9 +40,8 @@ public class ProductPortOutImpl implements ProductPortOut {
     @Transactional
     @Override
     public void delete(String correlationId) throws RuntimeException {
-
         try{
-            Product savedProduct = getById(correlationId).orElseThrow(() -> new ObjectNotFoundException(new Object(),correlationId));
+            Product savedProduct = getById(correlationId);
             log.info("[ProductPortOutImpl - Postgres Impl ] deleting {} ....",savedProduct.getId());
             productRepository.delete(savedProduct);
         } catch (ObjectNotFoundException ex){
@@ -53,8 +51,8 @@ public class ProductPortOutImpl implements ProductPortOut {
     }
 
     @Override
-    public Optional<Product> getById(String correlationId) throws RuntimeException {
-        return productRepository.findByCorrelationId(correlationId);
+    public Product getById(String correlationId) throws ObjectNotFoundException {
+        return productRepository.findByCorrelationId(correlationId).orElseThrow(() -> new ObjectNotFoundException(new Object(),""));
     }
 
     @Override
