@@ -2,17 +2,23 @@ package com.net.myappi.infraestructure.in.rest;
 
 import com.net.myappi.application.port.in.ProductPortIn;
 import com.net.myappi.application.service.ProductsService;
+import com.net.myappi.domain.dto.rest.ErrorResponseDto;
 import com.net.myappi.domain.dto.rest.ProductRequestDto;
 import com.net.myappi.domain.dto.rest.ProductResponseDto;
-import org.hibernate.ObjectNotFoundException;
+import com.net.myappi.infraestructure.in.config.Constants;
+import com.net.myappi.infraestructure.in.exception.RestException;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/productsStore")
 public class ProductRestController implements ProductPortIn {
@@ -24,6 +30,7 @@ public class ProductRestController implements ProductPortIn {
     }
 
 
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
     @PostMapping("/product")
     @Override
     public ResponseEntity<ProductResponseDto> create(@RequestBody ProductRequestDto productRequestDto)  {
@@ -31,19 +38,20 @@ public class ProductRestController implements ProductPortIn {
         return ResponseEntity.ok(response);
     }
 
-
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
     @PutMapping@PostMapping("/product/{correlationId}")
     @Override
     public ProductResponseDto updateAll(@RequestBody ProductRequestDto productRequestDto, @PathVariable String correlationId) throws RuntimeException {
         return null;
     }
 
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
     @Override
     public ProductResponseDto updatePartially(ProductRequestDto productRequestDto, String correlationId) throws RuntimeException {
         return null;
     }
 
-
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
     @DeleteMapping("/products/{correlationId}")
     @Override
     public ResponseEntity<?> delete(@PathVariable String correlationId){
@@ -52,6 +60,7 @@ public class ProductRestController implements ProductPortIn {
     }
 
 
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
     @GetMapping("/products/{correlationId}")
     @Override
     public ResponseEntity<ProductResponseDto> getById(@PathVariable  String correlationId) throws RuntimeException {
@@ -59,15 +68,25 @@ public class ProductRestController implements ProductPortIn {
     }
 
 
+
+
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct" )
     @GetMapping("/products")
     @Override
     public ResponseEntity<List<ProductResponseDto>> getAll() throws RuntimeException {
         var response = Optional.of(productsService.getAll()).orElseThrow(() -> new RuntimeException("ERROR - GET ALL PRODUCT")).get();
         return ResponseEntity.ok(response);
     }
-
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
     @Override
     public List<ProductResponseDto> getByName(String name) throws RuntimeException {
         return null;
+    }
+
+    public ResponseEntity<?> fallbackMethodProduct(String s , Throwable throwable){
+
+        log.warn("[ADVICE] Error - SERVICE UNAVAILABLE");
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(new Date(),HttpStatus.SERVICE_UNAVAILABLE.value(), Constants.SERVICE_NOT_AVAILABLE );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponseDto);
     }
 }

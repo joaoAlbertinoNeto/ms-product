@@ -12,6 +12,7 @@ public interface ProductsService {
     public ProductResponseDto updatePartially( ProductRequestDto productRequestDto,String correlationId) throws RuntimeException;
     public void delete(String correlationId) throws RuntimeException;
     public ProductResponseDto getById(String correlationId) throws RuntimeException;
+
     public Optional<List<ProductResponseDto>> getAll() throws RuntimeException;
     public List<ProductResponseDto> getByName(String name) throws RuntimeException;
 }
