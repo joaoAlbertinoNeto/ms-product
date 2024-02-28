@@ -9,6 +9,7 @@ import com.net.myappi.infraestructure.in.config.Constants;
 import com.net.myappi.infraestructure.in.exception.RestException;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,7 @@ public class ProductRestController implements ProductPortIn {
     }
 
 
-    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct")
+    @RateLimiter(name = "productratelimit" , fallbackMethod = "fallbackMethodProduct" )
     @GetMapping("/products/{correlationId}")
     @Override
     public ResponseEntity<ProductResponseDto> getById(@PathVariable  String correlationId) throws RuntimeException {
@@ -83,8 +84,12 @@ public class ProductRestController implements ProductPortIn {
         return null;
     }
 
-    public ResponseEntity<?> fallbackMethodProduct(String s , Throwable throwable){
-
+    public ResponseEntity<?> fallbackMethodProduct(Throwable throwable){
+        if(throwable instanceof ObjectNotFoundException){
+            log.warn("[ADVICE] Error - Not Found");
+            ErrorResponseDto errorResponseDto = new ErrorResponseDto(new Date(),HttpStatus.NOT_FOUND.value(),Constants.NOT_FOUND_OBJECT_ERROR );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+        }
         log.warn("[ADVICE] Error - SERVICE UNAVAILABLE");
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(new Date(),HttpStatus.SERVICE_UNAVAILABLE.value(), Constants.SERVICE_NOT_AVAILABLE );
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponseDto);

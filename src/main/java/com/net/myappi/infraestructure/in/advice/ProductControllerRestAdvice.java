@@ -27,7 +27,7 @@ public class ProductControllerRestAdvice {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponseDto> handleException(RuntimeException exception){
         log.warn("[ADVICE] Error - Internal Server Error");
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(new Date(),HttpStatus.NOT_FOUND.value(),Constants.NOT_FOUND_OBJECT_ERROR );
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(new Date(),HttpStatus.INTERNAL_SERVER_ERROR.value(),Constants.GENERIC_ERROR );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponseDto);
     }
 
