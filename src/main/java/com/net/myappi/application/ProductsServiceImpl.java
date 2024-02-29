@@ -73,11 +73,16 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public List<ProductResponseDto> getByName(String name) throws RuntimeException {
-        return null;
+    public Optional<List<ProductResponseDto>> getByName(String name) throws RuntimeException {
+        log.info("[SERVICE] - geting {} ... ",name);
+        var response = productPortOut.getByName(name);
+        if(response.isEmpty()){
+            throw new ObjectNotFoundException(Optional.ofNullable(null),"OBJ_NOT_FOUND");
+        }
+
+        return Optional.of(response.stream().map(mapper::productToProductResponseDto).collect(Collectors.toList()));
+
     }
-
-
     private static String createCorrelation(){
         return UUID.randomUUID().toString();
     }

@@ -63,6 +63,6 @@ public class ProductPortOutImpl implements ProductPortOut {
 
     @Override
     public List<Product> getByName(String name) throws RuntimeException {
-        return null;
+        return productRepository.findAllByName(name);
     }
 }
