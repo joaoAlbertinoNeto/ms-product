@@ -20,6 +20,6 @@ services:
       - "8080:8080"
     volumes:
       - ./target/myappi-0.0.1-SNAPSHOT.jar:/app/myappi-0.0.1-SNAPSHOT.jar
-    command: ["java", "-jar", "/app/myappi-0.0.1-SNAPSHOT.jar"]
+    command: ["java", "-jar", "/app/product-0.0.1-SNAPSHOT.jar"]
     depends_on:
       - postgres
